@@ -44,10 +44,12 @@ class AccountScreen extends ConsumerWidget {
                       // than directly calling the authRepository
                       // The StateNotifierProvider does not have a signOut method
                       // so we need to use .notifier to access the controller's method
-                      await ref
+                      final success = await ref
                           .read(accountScreenControllerProvider.notifier)
                           .signOut();
-                      // TODO: Only pop on success
+                      if (success) {
+                        Navigator.of(context).pop();
+                      }
                     }
                   },
           ),
