@@ -1,5 +1,5 @@
 import 'package:ecommerce_app/src/common_widgets/alert_dialogs.dart';
-import 'package:ecommerce_app/src/features/authentication/data/fake_auth_repository.dart';
+import 'package:ecommerce_app/src/features/authentication/presentation/account/account_screen_controller.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
 import 'package:ecommerce_app/src/features/authentication/domain/app_user.dart';
 import 'package:flutter/material.dart';
@@ -14,25 +14,42 @@ class AccountScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<AsyncValue<void>>(accountScreenControllerProvider,
+        (previousState, state) {
+      if (!state.isRefreshing && state.hasError) {
+        showExceptionAlertDialog(
+            context: context, title: 'Error'.hardcoded, exception: state.error);
+      }
+    });
+    final state = ref.watch(accountScreenControllerProvider);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Account'.hardcoded),
+        title: state.isLoading
+            ? const CircularProgressIndicator()
+            : Text('Account'.hardcoded),
         actions: [
           ActionTextButton(
             text: 'Logout'.hardcoded,
-            onPressed: () async {
-              final logout = await showAlertDialog(
-                context: context,
-                title: 'Are you sure?'.hardcoded,
-                cancelActionText: 'Cancel'.hardcoded,
-                defaultActionText: 'Logout'.hardcoded,
-              );
-              if (logout == true) {
-                ref.read(authRepositoryProvider).signOut();
-                // TODO: Only pop on successful logout
-                Navigator.of(context).pop();
-              }
-            },
+            onPressed: state.isLoading
+                ? null
+                : () async {
+                    final logout = await showAlertDialog(
+                      context: context,
+                      title: 'Are you sure?'.hardcoded,
+                      cancelActionText: 'Cancel'.hardcoded,
+                      defaultActionText: 'Logout'.hardcoded,
+                    );
+                    if (logout == true) {
+                      // Will use the controller to sign out rather
+                      // than directly calling the authRepository
+                      // The StateNotifierProvider does not have a signOut method
+                      // so we need to use .notifier to access the controller's method
+                      await ref
+                          .read(accountScreenControllerProvider.notifier)
+                          .signOut();
+                      // TODO: Only pop on success
+                    }
+                  },
           ),
         ],
       ),

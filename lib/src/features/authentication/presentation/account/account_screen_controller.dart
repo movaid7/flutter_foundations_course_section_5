@@ -1,6 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:ecommerce_app/src/features/authentication/data/fake_auth_repository.dart';
 
 class AccountScreenController extends StateNotifier<AsyncValue<void>> {
@@ -17,7 +15,6 @@ class AccountScreenController extends StateNotifier<AsyncValue<void>> {
     try {
       state = const AsyncValue<void>.loading();
       await authRepository.signOut();
-
       state = const AsyncValue<void>.data(null);
     } catch (e) {
       state = AsyncValue<void>.error(e);
