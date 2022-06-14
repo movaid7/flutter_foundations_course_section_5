@@ -1,5 +1,5 @@
 import 'package:ecommerce_app/src/features/authentication/presentation/sign_in/email_password_sign_in_state.dart';
-import 'package:ecommerce_app/src/features/authentication/presentation/sign_in/password_sign_in_controller.dart';
+import 'package:ecommerce_app/src/features/authentication/presentation/sign_in/email_password_sign_in_controller.dart';
 import 'package:ecommerce_app/src/features/authentication/presentation/sign_in/string_validators.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
 import 'package:ecommerce_app/src/utils/async_value_ui.dart';
@@ -116,9 +116,10 @@ class _EmailPasswordSignInContentsState
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<EmailPasswordSignInState>(
-        emailPasswordSignInControllerProvider(widget.formType),
-        (_, state) => state.value.showAlertDialogOnError(context));
+    ref.listen<AsyncValue>(
+        emailPasswordSignInControllerProvider(widget.formType)
+            .select((state) => state.value),
+        (_, state) => state.showAlertDialogOnError(context));
     final state =
         ref.watch(emailPasswordSignInControllerProvider(widget.formType));
     return ResponsiveScrollableCard(
