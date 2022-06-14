@@ -30,6 +30,7 @@ final goRouterProvider = Provider<GoRouter>(
     return GoRouter(
       initialLocation: '/',
       debugLogDiagnostics: false,
+      // Redirect logic based on the current user signIn status
       redirect: (state) {
         final isLoggedIn = authRepository.currentUser != null;
         if (isLoggedIn) {
